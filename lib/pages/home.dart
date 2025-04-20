@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:real_project/models/category_model..dart';
@@ -144,11 +145,14 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Image.asset(
-                        catigories[index].imagePath,
-                        width: 150,
-                        height: 150,
-                        fit: BoxFit.cover,
+                      CachedNetworkImage(
+                        imageUrl: catigories[index].imagePath,
+                        placeholder: (context, url) =>
+                            CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                        height: 140,
+                        width: 160,
+                        fit: BoxFit.fill,
                       ),
                       SizedBox(
                         height: 20,
