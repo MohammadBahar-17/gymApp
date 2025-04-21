@@ -1,10 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:real_project/models/category_model..dart';
+import 'package:real_project/models/category_model.dart';
+import 'package:real_project/models/diet_model.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -12,14 +13,86 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<CategoryModel> catigories = [];
+  List<DietModel> diets = [];
 
-  void _getCatogories() {
+  void _getCategories() {
     catigories = CategoryModel.getCategories();
+  }
+
+  void _getDiets() {
+    diets = DietModel.getDiets();
   }
 
   @override
   void initState() {
-    _getCatogories();
+    super.initState();
+    _getCategories();
+    _getDiets();
+  }
+
+  Widget categoriesSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: EdgeInsets.only(left: 30, top: 10),
+          child: Text(
+            'Muscles categories ',
+            style: TextStyle(
+              fontSize: 24,
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        SizedBox(
+          height: 250,
+          child: ListView.builder(
+            itemCount: catigories.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.only(left: 30.0),
+                child: Container(
+                  width: 150,
+                  decoration: BoxDecoration(
+                    color: catigories[index].boxColor,
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: catigories[index].imagePath,
+                        placeholder: (context, url) =>
+                            CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                        height: 140,
+                        width: 160,
+                        fit: BoxFit.fill,
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        catigories[index].name,
+                        style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   PreferredSizeWidget buildAppBar() {
@@ -110,74 +183,85 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget categoriesSection() {
+  Widget dietSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          padding: EdgeInsets.only(left: 30, top: 10),
-          child: Text(
-            'Muscles categories ',
-            style: TextStyle(
-              fontSize: 24,
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
+        Padding(
+          padding: const EdgeInsets.only(left: 30.0),
+          child: SizedBox(
+            child: Text(
+              'Recommendation for Diet',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
         SizedBox(
-          height: 10,
+          height: 20,
         ),
-        SizedBox(
-          height: 250,
-          child: ListView.builder(
-            itemCount: catigories.length,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 30.0),
-                child: Container(
-                  width: 150,
-                  decoration: BoxDecoration(
-                    color: catigories[index].boxColor,
-                    borderRadius: BorderRadius.circular(20.0),
+        Padding(
+          padding: const EdgeInsets.only(left: 30.0),
+          child: SizedBox(
+            height: 120,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: diets.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 10.0),
+                  child: Container(
+                    width: 200,
+                    decoration: BoxDecoration(
+                      color: diets[index].boxColor,
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 5.0),
+                          SvgPicture.asset(
+                            diets[index].iconPath,
+                            width: 65,
+                            height: 65,
+                          ),
+                          Text(diets[index].name),
+                          SizedBox(height: 5.0),
+                          Text(
+                            diets[index].level +
+                                ' | ' +
+                                diets[index].duration +
+                                ' | ' +
+                                diets[index].calorie,
+                            style: const TextStyle(
+                                color: Color(0xff7B6F72),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          SizedBox(height: 5.0),
+                        ],
+                      ),
+                    ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CachedNetworkImage(
-                        imageUrl: catigories[index].imagePath,
-                        placeholder: (context, url) =>
-                            CircularProgressIndicator(),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
-                        height: 140,
-                        width: 160,
-                        fit: BoxFit.fill,
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        catigories[index].name,
-                        style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
+        SizedBox(
+          height: 5.0,
+        )
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    _getCatogories();
+    _getCategories();
     return Scaffold(
       appBar: buildAppBar(),
       backgroundColor: Colors.white,
@@ -189,6 +273,10 @@ class _HomePageState extends State<HomePage> {
             height: 10,
           ),
           categoriesSection(),
+          SizedBox(
+            height: 20,
+          ),
+          dietSection(),
         ],
       ),
     );
