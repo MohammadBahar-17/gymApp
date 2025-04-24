@@ -1,8 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:real_project/models/category_model.dart';
 import 'package:real_project/models/diet_model.dart';
+import 'package:real_project/pages/MuscleInfoPage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,11 +12,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<CategoryModel> catigories = [];
+  List<CategoryModel> categories = [];
   List<DietModel> diets = [];
 
   void _getCategories() {
-    catigories = CategoryModel.getCategories();
+    categories = CategoryModel.getCategories();
   }
 
   void _getDiets() {
@@ -34,57 +34,111 @@ class _HomePageState extends State<HomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          padding: EdgeInsets.only(left: 30, top: 10),
-          child: Text(
-            'Muscles categories ',
-            style: TextStyle(
-              fontSize: 24,
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
-            ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Row(
+            children: [
+              Container(
+                width: 4,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Muscle Categories',
+                style: TextStyle(
+                  fontSize: 26,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
           ),
         ),
-        SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 16),
         SizedBox(
           height: 250,
           child: ListView.builder(
-            itemCount: catigories.length,
+            itemCount: categories.length,
             scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             itemBuilder: (context, index) {
               return Padding(
-                padding: const EdgeInsets.only(left: 30.0),
-                child: Container(
-                  width: 150,
-                  decoration: BoxDecoration(
-                    color: catigories[index].boxColor,
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CachedNetworkImage(
-                        imageUrl: catigories[index].imagePath,
-                        placeholder: (context, url) =>
-                            CircularProgressIndicator(),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
-                        height: 140,
-                        width: 160,
-                        fit: BoxFit.fill,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Hero(
+                  tag: 'category_${categories[index].name}',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MuscleInfoPage(
+                              category: categories[index],
+                            ),
+                          ),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(24),
+                      child: Container(
+                        width: 170,
+                        decoration: BoxDecoration(
+                          color: categories[index].boxColor.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  categories[index].boxColor.withOpacity(0.3),
+                              blurRadius: 12,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(24),
+                                topRight: Radius.circular(24),
+                              ),
+                              child: Image.asset(
+                                categories[index].imagePath,
+                                height: 140,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
+                              child: Text(
+                                categories[index].name,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Icon(
+                              Icons.arrow_forward_rounded,
+                              color: Colors.black54,
+                              size: 22,
+                            ),
+                            const SizedBox(height: 6),
+                          ],
+                        ),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        catigories[index].name,
-                        style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               );
@@ -232,11 +286,7 @@ class _HomePageState extends State<HomePage> {
                           Text(diets[index].name),
                           SizedBox(height: 5.0),
                           Text(
-                            diets[index].level +
-                                ' | ' +
-                                diets[index].duration +
-                                ' | ' +
-                                diets[index].calorie,
+                            '${diets[index].level} | ${diets[index].duration} | ${diets[index].calorie}',
                             style: const TextStyle(
                                 color: Color(0xff7B6F72),
                                 fontSize: 12,
